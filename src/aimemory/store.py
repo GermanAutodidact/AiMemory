@@ -7,9 +7,9 @@ adapters for open-mem, true-mem, or a database are introduced.
 from __future__ import annotations
 
 import json
+from collections.abc import Iterator
 from dataclasses import fields
 from pathlib import Path
-from collections.abc import Iterator
 
 from .models import Evidence, MemoryRecord, VerificationStatus
 
