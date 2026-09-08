@@ -1,0 +1,14 @@
+{
+  // Safe example only. Keep provider credentials in environment variables.
+  "memory": {
+    "backends": ["open-mem", "true-mem"],
+    "dataDir": "${AIMEMORY_DATA_DIR}"
+  },
+  "routing": {
+    "main": "opencode/deepseek-v4-flash-free",
+    "recherche": "opencode/deepseek-v4-flash-free",
+    "crossCheck": "gemini",
+    "fastStructured": "groq",
+    "fallback": "openrouter"
+  }
+}
