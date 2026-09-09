@@ -5,6 +5,32 @@ bei Modellanfragen, in neuen Sessions und vor Session-Komprimierung.
 
 ## Einmalig installieren
 
+### Windows-Komplettinstallation
+
+Im geklonten AiMemory-Repository in PowerShell:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\setup-windows.ps1
+```
+
+Das Skript erledigt diese Schritte automatisch:
+
+1. `.venv` mit dem Windows-Python-Launcher erstellen.
+2. AiMemory lokal installieren oder aktualisieren.
+3. Das verwaltete Plugin global nach
+   `%USERPROFILE%\.config\opencode\plugins\aimemory.js` installieren.
+4. Die Datenbank unter `%LOCALAPPDATA%\AiMemory\memory.sqlite3` verwenden.
+5. `AIMEMORY_PYTHON`, `AIMEMORY_DB`, `AIMEMORY_NAMESPACE` und
+   `AIMEMORY_MAX_CHARS` dauerhaft als Benutzer-Umgebungsvariablen setzen.
+6. Die Datenbank mit `doctor` prüfen.
+
+Das Skript überschreibt nur eine bereits von AiMemory verwaltete `aimemory.js`.
+Eine gleichnamige fremde Datei bleibt erhalten und führt zu einer verständlichen
+Fehlermeldung. Nach erfolgreichem Abschluss alle OpenCode-Fenster schließen und
+OpenCode neu starten, damit es Plugin und Umgebungsvariablen übernimmt.
+
+### Manuelle oder projektbezogene Installation
+
 1. AiMemory-Repository aktualisieren, virtuelle Umgebung aktivieren.
 2. Im Repository `python -m pip install -e .` ausführen.
 3. `python -m aimemory install-opencode /pfad/zum/arbeitsprojekt` ausführen.
@@ -22,7 +48,9 @@ PowerShell, im AiMemory-Repository mit .venv:
 $env:AIMEMORY_PYTHON = (Resolve-Path .\.venv\Scripts\python.exe).Path
 ```
 
-Der Installer legt `.opencode/plugins/aimemory.js` im gewählten Projekt an.
+Der projektbezogene Installer legt `.opencode/plugins/aimemory.js` im gewählten
+Projekt an. `python -m aimemory install-opencode --global` installiert es alternativ
+für alle OpenCode-Projekte dieses Benutzerkontos.
 OpenCode-Konfiguration und abweichende bestehende Plugin-Dateien werden nicht
 überschrieben. Ein identisches Plugin wird erkannt. Das Python-Paket enthält die
 Plugin-Datei. Der Interpreter mit installiertem AiMemory muss im OpenCode-Prozess

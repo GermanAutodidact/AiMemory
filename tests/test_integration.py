@@ -137,3 +137,13 @@ def test_cli_export_import(tmp_path, capsys):
     assert main(base + ["doctor"]) == 0
     file.write_text("[]")
     assert main(base + ["import", str(file)]) == 2
+
+
+def test_cli_uses_database_environment_variable(tmp_path, capsys, monkeypatch):
+    database = tmp_path / "configured" / "memory.sqlite3"
+    monkeypatch.setenv("AIMEMORY_DB", str(database))
+    assert main(["--namespace", "global", "add", "configured database"]) == 0
+    capsys.readouterr()
+    assert main(["--namespace", "global", "doctor"]) == 0
+    result = json.loads(capsys.readouterr().out)
+    assert result["database"] == str(database.resolve())

@@ -11,7 +11,17 @@ python -m pytest
 aimemory doctor
 ```
 
-Windows: zuerst `py -m venv .venv`, dann `.venv\Scripts\Activate.ps1`.
+Windows richtet die globale OpenCode-Anbindung mit einem Befehl ein:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\setup-windows.ps1
+```
+
+Das Skript erstellt `.venv`, installiert AiMemory, legt das globale OpenCode-Plugin
+unter `~/.config/opencode/plugins/aimemory.js` ab und speichert die nötigen
+Umgebungsvariablen dauerhaft für den Windows-Benutzer. Danach OpenCode vollständig
+schließen und neu starten. Details: [OpenCode unter Windows](docs/opencode.md#windows-komplettinstallation).
+
 Termux: Python und Git über `pkg install python git` installieren, das private Repository über die eigene GitHub-Anmeldung klonen, `python -m venv .venv` und `source .venv/bin/activate`. Zugangsdaten nicht in Befehls-URLs eintragen. Die hier ausgeführten Tests liefen unter Linux; ein echter Termux-Gerätetest steht aus.
 
 ## Alltag
@@ -25,7 +35,7 @@ aimemory --namespace demo export
 aimemory --namespace demo import export.json
 ```
 
-`export` schreibt JSON auf stdout. Mit `> export.json` unter Bash oder `| Set-Content -Encoding utf8 export.json` unter PowerShell 7 speichern. Standarddatenbank: ~/.aimemory/memory.sqlite3. `--db` oder `AIMEMORY_DATA_DIR` ändert den Pfad. Keine privaten Daten in dieses Repository legen.
+`export` schreibt JSON auf stdout. Mit `> export.json` unter Bash oder `| Set-Content -Encoding utf8 export.json` unter PowerShell 7 speichern. Standarddatenbank: ~/.aimemory/memory.sqlite3. `--db`, `AIMEMORY_DB` oder `AIMEMORY_DATA_DIR` ändert den Pfad. Keine privaten Daten in dieses Repository legen.
 
 ## open-mem und true-mem
 
@@ -48,7 +58,7 @@ Details und geprüfte Quellversionen: [Backend-Anbindungen](docs/integrations.md
 - Keine Laufzeit-Abhängigkeiten, Netzwerk- oder Modellaufrufe in AiMemory.
 
 ## Automatische OpenCode-Anbindung
-Das mitgelieferte Plugin speichert mit `#merken:` markierte Nutzernachrichten und lädt den Kontext automatisch in neuen Sessions und vor Komprimierungen. Installation: `python -m aimemory install-opencode /pfad/zum/arbeitsprojekt`. Anschließend den Python-Pfad setzen und OpenCode neu starten. [Vollständige Anleitung](docs/opencode.md).
+Das mitgelieferte Plugin speichert mit `#merken:` markierte Nutzernachrichten und lädt den Kontext automatisch in neuen Sessions und vor Komprimierungen. Globale Installation: `python -m aimemory install-opencode --global`. Projektbezogene Installation: `python -m aimemory install-opencode /pfad/zum/arbeitsprojekt`. Anschließend den Python-Pfad setzen und OpenCode neu starten. [Vollständige Anleitung](docs/opencode.md).
 
 ## Grenzen
 Die Backend-Adapter importieren ausdrücklich angeforderte **Snapshots**. Kein bidirektionaler Live-Sync und kein automatischer Zugriff auf ChatGPT-Gespräche. Das OpenCode-Plugin muss auf dem Host installiert werden. Spätere Änderungen oder Löschungen im Quellsystem entfernen alte Snapshots nicht. Konflikthinweise sind keine semantische Wahrheitsprüfung. Das Zeichenbudget garantiert kein Tokenbudget.

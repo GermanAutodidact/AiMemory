@@ -17,15 +17,26 @@ def main(argv=None):
     p.add_argument(
         "--db",
         default=str(
-            Path(os.environ.get("AIMEMORY_DATA_DIR", str(Path.home() / ".aimemory")))
-            / "memory.sqlite3"
+            Path(
+                os.environ.get(
+                    "AIMEMORY_DB",
+                    str(
+                        Path(os.environ.get("AIMEMORY_DATA_DIR", str(Path.home() / ".aimemory")))
+                        / "memory.sqlite3"
+                    ),
+                )
+            )
         ),
     )
     p.add_argument("--namespace", default="default")
     sub = p.add_subparsers(dest="command", required=True)
     sub.add_parser("capture", help="Read one explicit host memory from JSON stdin")
     install = sub.add_parser("install-opencode", help="Install plugin without changing host config")
-    install.add_argument("project")
+    install.add_argument("project", nargs="?")
+    install.add_argument("--global", dest="global_install", action="store_true")
+    install.add_argument(
+        "--update", action="store_true", help="Update only an AiMemory-managed file"
+    )
     add = sub.add_parser("add")
     add.add_argument("content")
     add.add_argument("--key")
@@ -48,7 +59,13 @@ def main(argv=None):
     args = p.parse_args(argv)
     try:
         if args.command == "install-opencode":
-            print(json.dumps(install_plugin(args.project)))
+            print(
+                json.dumps(
+                    install_plugin(
+                        args.project, global_install=args.global_install, update=args.update
+                    )
+                )
+            )
             return 0
         with SQLiteMemoryStore(args.db) as db:
             if args.command == "capture":

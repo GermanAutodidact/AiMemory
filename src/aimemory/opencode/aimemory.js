@@ -1,3 +1,4 @@
+// AiMemory managed OpenCode plugin — installed by `aimemory install-opencode`.
 import { execFile } from "node:child_process";
 import { createHash } from "node:crypto";
 import { resolve } from "node:path";
