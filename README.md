@@ -1,48 +1,56 @@
 # AiMemory
 
-AiMemory is an experimental, privacy-conscious memory and evidence layer for AI-agent workflows.
+Lokaler Memory- und Evidenzspeicher für KI-Workflows, Python 3.11+. Deine ursprünglichen MemoryRecord-, Evidence- und JsonlMemoryStore-Schnittstellen bleiben erhalten.
 
-The project starts from a Windows/OpenCode/Python setup and is designed to work with `open-mem` and `true-mem`. Its goal is to preserve useful context across agents without losing provenance, confidence, or security boundaries.
+## Installieren
+Im geklonten Repository:
 
-## Design goals
-
-- Structured memory records instead of untraceable prompt fragments
-- Evidence-first hand-offs between research, orchestration, and synthesis
-- A systematic cross-check pass for critical claims
-- Selective parallel research where independent verification matters
-- Static, role-based model routing
-- No secrets or API keys in the repository
-
-## Planned roles
-
-- **main** — orchestration, routing, analysis, and synthesis
-- **recherche** — source collection and structured evidence output
-- **cross-check** — independent verification and conflict detection
-- **critic** — optional second-model read-through for decision reports
-
-## Status
-
-Initial repository scaffold. Interfaces and schemas are deliberately small so the project can evolve without locking into one memory backend too early.
-
-## Quick start
-
-```powershell
-py -m venv .venv
-.\.venv\Scripts\Activate.ps1
+```console
 python -m pip install -e ".[dev]"
-pytest
+python -m pytest
+aimemory doctor
 ```
 
-Copy `.env.example` to `.env` and add local credentials there. Never commit `.env`.
+Windows: zuerst `py -m venv .venv`, dann `.venv\Scripts\Activate.ps1`.
+Termux: Python und Git über `pkg install python git` installieren, das private Repository über die eigene GitHub-Anmeldung klonen, `python -m venv .venv` und `source .venv/bin/activate`. Zugangsdaten nicht in Befehls-URLs eintragen. Die hier ausgeführten Tests liefen unter Linux; ein echter Termux-Gerätetest steht aus.
 
-## Repository map
+## Alltag
 
-- `src/aimemory/` — core Python package
-- `tests/` — automated tests
-- `docs/` — architecture and schemas
-- `agents/` — role definitions
-- `config/` — safe example configuration
+```console
+aimemory --namespace demo add "Antworten auf Deutsch" --key language --source user:explicit
+aimemory --namespace demo search Deutsch
+aimemory --namespace demo conflicts
+aimemory --namespace demo context --max-chars 6000
+aimemory --namespace demo export
+aimemory --namespace demo import export.json
+```
 
-## License
+`export` schreibt JSON auf stdout. Mit `> export.json` unter Bash oder `| Set-Content -Encoding utf8 export.json` unter PowerShell 7 speichern. Standarddatenbank: ~/.aimemory/memory.sqlite3. `--db` oder `AIMEMORY_DATA_DIR` ändert den Pfad. Keine privaten Daten in dieses Repository legen.
 
-No license has been selected yet. Until one is added, all rights are reserved.
+## open-mem und true-mem
+
+```console
+aimemory --namespace demo import open-mem-export.json --format open-mem
+aimemory --namespace demo import /pfad/memory.db --format true-mem --project /exakter/projektpfad
+aimemory --namespace global import /pfad/memory.db --format true-mem --global-only
+aimemory --namespace demo import old-memory.jsonl --format jsonl
+```
+
+Details und geprüfte Quellversionen: [Backend-Anbindungen](docs/integrations.md).
+
+## Fertig implementiert
+- Validierte Evidenz- und Memory-Datensätze, bestehende JSONL-API.
+- SQLite mit atomaren Imports und Erkennung von ID-Kollisionen.
+- Projektbereiche, Unicode-Suche, Kontextausgabe, Export/Import und Diagnose.
+- OpenMem-v1-Exportadapter inklusive Session-Zusammenfassungen.
+- TrueMem-SQLite-Import mit schreibgeschütztem Quellzugriff und expliziter Projektauswahl.
+- Konflikthinweise für verschiedene Inhalte mit gleichem metadata.key.
+- Keine Laufzeit-Abhängigkeiten, Netzwerk- oder Modellaufrufe in AiMemory.
+
+## Grenzen
+Die Adapter importieren ausdrücklich angeforderte **Snapshots**. Kein bidirektionaler Live-Sync, kein automatischer Zugriff auf ChatGPT-Gespräche und keine installierten Session-Hooks. Spätere Änderungen oder Löschungen im Quellsystem entfernen alte Snapshots nicht. Konflikthinweise sind keine semantische Wahrheitsprüfung. Das Zeichenbudget garantiert kein Tokenbudget.
+
+Daten sind lokal, aber nicht verschlüsselt. Namespaces sind Filter und keine Benutzerrechte. Memory und Quellen sind unvertrauenswürdige Daten, keine auszuführenden Anweisungen. Quellenreferenzen und Konfidenz allein bestätigen keine Aussage.
+
+## Lizenz
+Die vorhandene [Apache-2.0-Lizenz](LICENSE) bleibt erhalten.

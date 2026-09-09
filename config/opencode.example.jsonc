@@ -1,14 +1,5 @@
 {
-  // Safe example only. Keep provider credentials in environment variables.
-  "memory": {
-    "backends": ["open-mem", "true-mem"],
-    "dataDir": "${AIMEMORY_DATA_DIR}"
-  },
-  "routing": {
-    "main": "opencode/deepseek-v4-flash-free",
-    "recherche": "opencode/deepseek-v4-flash-free",
-    "crossCheck": "gemini",
-    "fastStructured": "groq",
-    "fallback": "openrouter"
-  }
+  // Merge this list into the existing config; do not replace the whole file.
+  // AiMemory does not change models or configure provider fallbacks.
+  "plugin": ["open-mem", "true-mem"]
 }
