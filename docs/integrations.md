@@ -20,7 +20,6 @@ Die Quelle wird über SQLite mode=ro und query_only gelesen. Nur aktive Datensä
 Identische Imports sind idempotent. Geänderte Quellaussagen erzeugen neue Snapshot-IDs. Vorhandene Snapshots bleiben erhalten, auch wenn die Quelle später etwas löscht. Daher keine automatische Aktualitätsgarantie. Importierte Belege bleiben unverified.
 
 ## OpenCode
-config/opencode.example.jsonc enthält die dokumentierte Plugin-Liste. In bestehende Einstellungen einfügen, diese nicht überschreiben. Die Plugins übernehmen ihre eigene Erfassung; AiMemory ergänzt die explizite CLI-Schnittstelle. Kein neuer Modelldienst und kein automatischer Modellwechsel werden eingerichtet.
+config/opencode.example.jsonc enthält die dokumentierte Plugin-Liste. In bestehende Einstellungen einfügen, diese nicht überschreiben. AiMemory ergänzt die CLI und ein optionales [OpenCode-Plugin](opencode.md) für Capture und Kontextinjektion. Kein neuer Modelldienst und kein automatischer Modellwechsel werden eingerichtet.
 
 OpenMem kann selbst KI-Kompression und Provider-Fallbacks verwenden. AiMemory garantiert nicht die Kostenfreiheit fremder Plugins. Für eine laufende Gesamteinbindung fehlen noch die konkrete Host-Konfiguration und ein Ende-zu-Ende-Test in der tatsächlichen Installation. Ein Windows-PC ist keine Entwicklungsvoraussetzung.
-

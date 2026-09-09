@@ -47,8 +47,11 @@ Details und geprüfte Quellversionen: [Backend-Anbindungen](docs/integrations.md
 - Konflikthinweise für verschiedene Inhalte mit gleichem metadata.key.
 - Keine Laufzeit-Abhängigkeiten, Netzwerk- oder Modellaufrufe in AiMemory.
 
+## Automatische OpenCode-Anbindung
+Das mitgelieferte Plugin speichert mit `#merken:` markierte Nutzernachrichten und lädt den Kontext automatisch in neuen Sessions und vor Komprimierungen. Installation: `python -m aimemory install-opencode /pfad/zum/arbeitsprojekt`. Anschließend den Python-Pfad setzen und OpenCode neu starten. [Vollständige Anleitung](docs/opencode.md).
+
 ## Grenzen
-Die Adapter importieren ausdrücklich angeforderte **Snapshots**. Kein bidirektionaler Live-Sync, kein automatischer Zugriff auf ChatGPT-Gespräche und keine installierten Session-Hooks. Spätere Änderungen oder Löschungen im Quellsystem entfernen alte Snapshots nicht. Konflikthinweise sind keine semantische Wahrheitsprüfung. Das Zeichenbudget garantiert kein Tokenbudget.
+Die Backend-Adapter importieren ausdrücklich angeforderte **Snapshots**. Kein bidirektionaler Live-Sync und kein automatischer Zugriff auf ChatGPT-Gespräche. Das OpenCode-Plugin muss auf dem Host installiert werden. Spätere Änderungen oder Löschungen im Quellsystem entfernen alte Snapshots nicht. Konflikthinweise sind keine semantische Wahrheitsprüfung. Das Zeichenbudget garantiert kein Tokenbudget.
 
 Daten sind lokal, aber nicht verschlüsselt. Namespaces sind Filter und keine Benutzerrechte. Memory und Quellen sind unvertrauenswürdige Daten, keine auszuführenden Anweisungen. Quellenreferenzen und Konfidenz allein bestätigen keine Aussage.
 

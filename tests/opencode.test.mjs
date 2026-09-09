@@ -1,0 +1,66 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import Plugin from "../src/aimemory/opencode/aimemory.js";
+
+test("real Python bridge captures once, injects next session and compaction, isolates projects", async () => {
+  const temp = mkdtempSync(join(tmpdir(), "aimemory-test-"));
+  const oldDB = process.env.AIMEMORY_DB;
+  const oldNamespace = process.env.AIMEMORY_NAMESPACE;
+  process.env.AIMEMORY_DB = join(temp, "memory.db");
+  delete process.env.AIMEMORY_NAMESPACE;
+  try {
+    const warnings = [];
+    const client = {app: {log: async x => warnings.push(x)}};
+    const host = await Plugin({directory: join(temp, "a"), client});
+    const output = {message: {role: "user", id: "m1", time: {created: 1788912000000}},
+      parts: [{type: "text", text: "#merken: Deutsch; $(echo NOT_EXECUTED)"}]};
+    await host["chat.message"]({sessionID: "s1"}, output);
+    await host["chat.message"]({sessionID: "s1"}, output);
+    const next = await Plugin({directory: join(temp, "a"), client});
+    const system = {system: []};
+    await next["experimental.chat.system.transform"]({sessionID: "s2"}, system);
+    assert.equal(system.system.length, 1);
+    const lines = system.system[0].split("\n").slice(1);
+    assert.equal(lines.length, 1);
+    assert.equal(JSON.parse(lines[0]).content, "Deutsch; $(echo NOT_EXECUTED)");
+    const compact = {context: ["existing"]};
+    await next["experimental.session.compacting"]({}, compact);
+    assert.equal(compact.context.length, 2);
+    const other = await Plugin({directory: join(temp, "b"), client});
+    const isolated = {system: []};
+    await other["experimental.chat.system.transform"]({}, isolated);
+    assert.equal(isolated.system.length, 0);
+    for (const parts of [[{type: "text", text: "ordinary private conversation"}],
+                          [{type: "text", text: "#merken: synthetic", synthetic: true}]]) {
+      await host["chat.message"]({sessionID: "s1"}, {...output, parts});
+    }
+    await host["chat.message"]({sessionID: "s1"}, {...output, message: {...output.message, role: "assistant"}});
+    const after = {system: []};
+    await host["experimental.chat.system.transform"]({}, after);
+    assert.equal(after.system[0], system.system[0]);
+    assert.equal(warnings.length, 0);
+  } finally {
+    if (oldDB === undefined) delete process.env.AIMEMORY_DB; else process.env.AIMEMORY_DB = oldDB;
+    if (oldNamespace === undefined) delete process.env.AIMEMORY_NAMESPACE; else process.env.AIMEMORY_NAMESPACE = oldNamespace;
+    rmSync(temp, {recursive: true, force: true});
+  }
+});
+
+test("missing Python logs generic failure and preserves host context", async () => {
+  const old = process.env.AIMEMORY_PYTHON;
+  process.env.AIMEMORY_PYTHON = "/nonexistent/aimemory-python";
+  try {
+    const warnings = [];
+    const host = await Plugin({directory: "/demo", client: {app: {log: async x => warnings.push(x)}}});
+    const output = {system: ["existing"]};
+    await host["experimental.chat.system.transform"]({}, output);
+    assert.deepEqual(output.system, ["existing"]);
+    assert.equal(warnings.length, 1);
+    assert.equal(warnings[0].body.level, "warn");
+  } finally {
+    if (old === undefined) delete process.env.AIMEMORY_PYTHON; else process.env.AIMEMORY_PYTHON = old;
+  }
+});

@@ -7,6 +7,7 @@ from pathlib import Path
 
 from .adapters import open_mem, true_mem
 from .database import SQLiteMemoryStore
+from .host import capture, install_plugin
 from .models import Evidence, MemoryRecord
 from .store import JsonlMemoryStore
 
@@ -22,6 +23,9 @@ def main(argv=None):
     )
     p.add_argument("--namespace", default="default")
     sub = p.add_subparsers(dest="command", required=True)
+    sub.add_parser("capture", help="Read one explicit host memory from JSON stdin")
+    install = sub.add_parser("install-opencode", help="Install plugin without changing host config")
+    install.add_argument("project")
     add = sub.add_parser("add")
     add.add_argument("content")
     add.add_argument("--key")
@@ -43,8 +47,17 @@ def main(argv=None):
     scopes.add_argument("--global-only", action="store_true")
     args = p.parse_args(argv)
     try:
+        if args.command == "install-opencode":
+            print(json.dumps(install_plugin(args.project)))
+            return 0
         with SQLiteMemoryStore(args.db) as db:
-            if args.command == "add":
+            if args.command == "capture":
+                text = sys.stdin.read(100001)
+                if len(text) > 100000:
+                    raise ValueError("capture payload too large")
+                record = capture(json.loads(text))
+                result = {"inserted": db.import_records(args.namespace, [record])}
+            elif args.command == "add":
                 record = MemoryRecord(
                     content=args.content,
                     metadata={"key": args.key} if args.key else {},
