@@ -27,8 +27,8 @@ export async function AiMemoryPlugin({ directory, client }) {
     catch { /* Logging must not interrupt the conversation. */ }
   };
   const behavior = "AiMemory command: If the user's whole message starts with #merken: or " +
-    "#remember:, the text after the marker is being stored as an explicit memory. " +
-    "Briefly confirm that it was saved; do not ask what the marker means.";
+    "#remember:, this requests explicit memory storage. " +
+    "Do not claim successful storage without database evidence; do not ask what the marker means.";
   const context = async (target) => {
     try {
       const text = await run(["context", "--max-chars", String(maxChars)]);

@@ -67,8 +67,8 @@ Als eigene Nachricht in OpenCode:
 
 Alternativ `#remember:`. Eine neue Session im selben Projekt erhält die Erinnerung.
 Normale Gespräche, Assistententexte und synthetische Nachrichten werden nicht
-erfasst. Das Plugin erklärt dem Modell den Marker; es soll die Speicherung deshalb
-kurz bestätigen, statt nach seiner Bedeutung zu fragen. Die tatsächliche Speicherung
+erfasst. Das Plugin erklärt dem Modell den Marker; es darf ohne Datenbanknachweis
+keine erfolgreiche Speicherung behaupten. Die tatsächliche Speicherung
 wird für einen Ende-zu-Ende-Test zusätzlich direkt über die CLI kontrolliert.
 
 ## Namespace und Speicher

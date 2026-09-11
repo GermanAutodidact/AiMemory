@@ -24,3 +24,4 @@ jobs:
         with:
           node-version: "22"
       - run: node --test tests/opencode.test.mjs
+      - run: node --test tests/opencode-v2.test.mjs

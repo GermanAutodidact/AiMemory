@@ -37,3 +37,15 @@ def test_global_install_and_managed_update(tmp_path, monkeypatch):
     assert "updated" in install_plugin(global_install=True, update=True)["status"]
     with pytest.raises(ValueError):
         install_plugin(tmp_path, global_install=True)
+
+
+def test_switch_api_preserves_foreign_file(tmp_path):
+    install_plugin(tmp_path, api="v2")
+    path = tmp_path / ".opencode/plugins/aimemory.js"
+    assert 'id: "aimemory"' in path.read_text()
+    install_plugin(tmp_path, api="v1", update=True)
+    assert "function AiMemoryPlugin" in path.read_text()
+    path.write_text("my own plugin")
+    with pytest.raises(ValueError):
+        install_plugin(tmp_path, api="v2", update=True)
+    assert path.read_text() == "my own plugin"

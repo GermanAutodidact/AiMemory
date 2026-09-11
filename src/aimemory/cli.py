@@ -33,6 +33,7 @@ def main(argv=None):
     sub.add_parser("capture", help="Read one explicit host memory from JSON stdin")
     install = sub.add_parser("install-opencode", help="Install plugin without changing host config")
     install.add_argument("project", nargs="?")
+    install.add_argument("--api", choices=["v1", "v2"], default="v1")
     install.add_argument("--global", dest="global_install", action="store_true")
     install.add_argument(
         "--update", action="store_true", help="Update only an AiMemory-managed file"
@@ -62,7 +63,10 @@ def main(argv=None):
             print(
                 json.dumps(
                     install_plugin(
-                        args.project, global_install=args.global_install, update=args.update
+                        args.project,
+                        global_install=args.global_install,
+                        update=args.update,
+                        api=args.api,
                     )
                 )
             )

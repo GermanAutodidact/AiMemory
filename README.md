@@ -58,6 +58,10 @@ Details und geprüfte Quellversionen: [Backend-Anbindungen](docs/integrations.md
 - Keine Laufzeit-Abhängigkeiten, Netzwerk- oder Modellaufrufe in AiMemory.
 
 ## Automatische OpenCode-Anbindung
+OpenCode **V2 beta** benötigt den separaten Adapter: unter Windows
+`powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\setup-windows.ps1 -OpenCodeApi v2`.
+[V2-Anleitung und Testgrenzen](docs/opencode-v2.md). Ohne Auswahl bleibt V1 der Standard.
+
 Das mitgelieferte Plugin speichert mit `#merken:` markierte Nutzernachrichten und lädt den Kontext automatisch in neuen Sessions und vor Komprimierungen. Globale Installation: `python -m aimemory install-opencode --global`. Projektbezogene Installation: `python -m aimemory install-opencode /pfad/zum/arbeitsprojekt`. Anschließend den Python-Pfad setzen und OpenCode neu starten. [Vollständige Anleitung](docs/opencode.md).
 
 ## Grenzen

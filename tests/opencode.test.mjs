@@ -23,7 +23,7 @@ test("real Python bridge captures once, injects next session and compaction, iso
     const system = {system: []};
     await next["experimental.chat.system.transform"]({sessionID: "s2"}, system);
     assert.equal(system.system.length, 2);
-    assert.match(system.system[0], /Briefly confirm that it was saved/);
+    assert.match(system.system[0], /Do not claim successful storage/);
     const lines = system.system[1].split("\n").slice(1);
     assert.equal(lines.length, 1);
     assert.equal(JSON.parse(lines[0]).content, "Deutsch; $(echo NOT_EXECUTED)");

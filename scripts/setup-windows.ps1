@@ -1,6 +1,8 @@
 param(
     [string]$Namespace = "global",
-    [int]$MaxChars = 6000
+    [int]$MaxChars = 6000,
+    [ValidateSet("v1", "v2")]
+    [string]$OpenCodeApi = "v1"
 )
 
 $ErrorActionPreference = "Stop"
@@ -29,7 +31,7 @@ if (-not (Test-Path $Python)) {
 
 & $Python -m pip install -e $RepoRoot
 Assert-NativeSuccess "Installing AiMemory"
-& $Python -m aimemory install-opencode --global --update
+& $Python -m aimemory install-opencode --global --update --api $OpenCodeApi
 Assert-NativeSuccess "Installing the OpenCode plugin"
 
 $DataDirectory = Join-Path $env:LOCALAPPDATA "AiMemory"
@@ -61,5 +63,9 @@ Write-Host "AiMemory setup complete." -ForegroundColor Green
 Write-Host "Plugin: $Plugin"
 Write-Host "Database: $Database"
 Write-Host "Namespace: $Namespace"
+Write-Host "OpenCode API: $OpenCodeApi"
+if ($OpenCodeApi -eq "v2") {
+    Write-Host "V2: restart the background server or launch opencode2 --standalone from a fresh terminal."
+}
 Write-Host "Close every OpenCode window, start OpenCode again, then send:"
 Write-Host "#merken: AiMemory Funktionstest erfolgreich." -ForegroundColor Cyan

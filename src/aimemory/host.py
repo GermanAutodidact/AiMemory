@@ -28,7 +28,9 @@ def capture(payload):
     )
 
 
-def install_plugin(project=None, *, global_install=False, update=False):
+def install_plugin(project=None, *, global_install=False, update=False, api="v1"):
+    if api not in ("v1", "v2"):
+        raise ValueError("OpenCode API must be v1 or v2")
     if global_install:
         if project is not None:
             raise ValueError("global installation does not accept a project")
@@ -40,7 +42,8 @@ def install_plugin(project=None, *, global_install=False, update=False):
         if not project.is_dir():
             raise ValueError("project must be an existing directory")
         destination = project / ".opencode" / "plugins" / "aimemory.js"
-    content = files("aimemory").joinpath("opencode/aimemory.js").read_text(encoding="utf-8")
+    source = "aimemory-v2.js" if api == "v2" else "aimemory.js"
+    content = files("aimemory").joinpath("opencode/" + source).read_text(encoding="utf-8")
     if destination.exists():
         if destination.read_text(encoding="utf-8") == content:
             return {"path": str(destination), "status": "already installed"}
