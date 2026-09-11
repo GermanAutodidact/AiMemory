@@ -4,7 +4,7 @@ import { createHash } from "node:crypto";
 import { resolve } from "node:path";
 
 // No shell interpolation. Private memory is passed on stdin, not argv.
-export default async function AiMemoryPlugin({ directory, client }) {
+export async function AiMemoryPlugin({ directory, client }) {
   const python = process.env.AIMEMORY_PYTHON || "python";
   const namespace = process.env.AIMEMORY_NAMESPACE ||
     "project:" + createHash("sha256").update(resolve(directory)).digest("hex");
@@ -26,6 +26,9 @@ export default async function AiMemoryPlugin({ directory, client }) {
       message: "Memory unavailable. Check AIMEMORY_PYTHON and run aimemory doctor."}}); }
     catch { /* Logging must not interrupt the conversation. */ }
   };
+  const behavior = "AiMemory command: If the user's whole message starts with #merken: or " +
+    "#remember:, the text after the marker is being stored as an explicit memory. " +
+    "Briefly confirm that it was saved; do not ask what the marker means.";
   const context = async (target) => {
     try {
       const text = await run(["context", "--max-chars", String(maxChars)]);
@@ -49,7 +52,10 @@ export default async function AiMemoryPlugin({ directory, client }) {
           created_at: new Date(created).toISOString()}));
       } catch { await warn(); }
     },
-    "experimental.chat.system.transform": async (_input, output) => context(output.system),
+    "experimental.chat.system.transform": async (_input, output) => {
+      output.system.push(behavior);
+      await context(output.system);
+    },
     "experimental.session.compacting": async (_input, output) => context(output.context),
   };
 }
